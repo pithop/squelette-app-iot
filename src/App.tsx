@@ -1,37 +1,40 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./App.css";
-import { initializeApp } from "firebase/app";
-import { getDatabase, ref, onValue } from "firebase/database";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCAtui-PZxdfmbrcQV4NLNci0pgf4iyO28",
-  authDomain: "hackathonlpsndoc.firebaseapp.com",
-  projectId: "hackathonlpsndoc",
-  storageBucket: "hackathonlpsndoc.appspot.com",
-  messagingSenderId: "311547897393",
-  appId: "1:311547897393:web:30ce2f3b00e14aab1bd710",
-  measurementId: "G-G9MBS8TS3V",
-  databaseURL: "https://hackathonlpsndoc-default-rtdb.europe-west1.firebasedatabase.app"
-};
-
-const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
+import { uploadCSVToFirebase } from './utils';
+import { DisplayData } from './DisplayData';
 
 export default function App() {
-  const [data, setData] = useState(null);
+  const [file, setFile] = useState<File | null>(null);
 
-  useEffect(() => {
-    const dataRef = ref(database, 'test/path'); // Utilisez le chemin correct ici
-    onValue(dataRef, (snapshot) => {
-      const data = snapshot.val();
-      setData(data);
-    });
-  }, []);
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      setFile(event.target.files[0]);
+    }
+  };
+
+  const handleUpload = () => {
+    if (file) {
+      uploadCSVToFirebase(file, 'sable-limoneux/soil-humidity');
+    }
+  };
 
   return (
     <div className="App">
-      <h1>Bienvenue sur votre application</h1>
-      <p>{data ? JSON.stringify(data) : "Chargement..."}</p>
+      <header>
+        <img src="logo512.png" alt="Project Logo" className="logo" />
+        <h1>Bienvenue sur votre application</h1>
+      </header>
+      <main>
+        <section>
+          <h2>Télécharger les données</h2>
+          <input type="file" onChange={handleFileUpload} />
+          <button onClick={handleUpload}>Uploader</button>
+        </section>
+        <DisplayData path="sable-limoneux/soil-humidity" />
+      </main>
+      <footer>
+        <p>&copy; 2024 Votre Compagnie. Tous droits réservés.</p>
+      </footer>
     </div>
   );
 }
