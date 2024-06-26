@@ -14,8 +14,26 @@ export const parseCSV = (file) => {
   });
 };
 
+const sanitizeKey = (key) => {
+  return key.replace(/[.#$/\[\]]/g, '_');
+};
+
+const sanitizeData = (data) => {
+  if (Array.isArray(data)) {
+    return data.map(sanitizeData);
+  } else if (data !== null && typeof data === 'object') {
+    return Object.keys(data).reduce((acc, key) => {
+      const sanitizedKey = sanitizeKey(key);
+      acc[sanitizedKey] = sanitizeData(data[key]);
+      return acc;
+    }, {});
+  }
+  return data;
+};
+
 export const uploadCSVToFirebase = async (file, path) => {
   const data = await parseCSV(file);
+  const sanitizedData = sanitizeData(data);
   const dbRef = ref(database, path);
-  set(dbRef, data);
+  set(dbRef, sanitizedData);
 };

@@ -1,39 +1,123 @@
-import React, { useEffect, useState } from "react";
-import { ref, onValue } from "firebase/database";
-import { database } from './firebase';
+import React, { useEffect, useState } from 'react';
+import { useTable, usePagination } from 'react-table';
+import { getDatabase, ref, onValue } from 'firebase/database';
+import { Table, Pagination } from 'react-bootstrap';
+import { format } from 'date-fns';
 
-export const DisplayData = ({ path }) => {
+const DisplayData = ({ path }) => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    const dataRef = ref(database, path);
+    const db = getDatabase();
+    const dataRef = ref(db, path);
     onValue(dataRef, (snapshot) => {
-      const data = snapshot.val();
-      setData(data);
+      const rawData = snapshot.val();
+      if (rawData) {
+        const keys = Object.keys(rawData);
+        const formattedData = keys.map((key) => ({
+          experimentation: rawData[key]?.experimentation,
+          scale: rawData[key]?.scale,
+          sensor1: parseFloat(rawData[key]?.sensor1),
+          sensor2: parseFloat(rawData[key]?.sensor2),
+          sensor3: parseFloat(rawData[key]?.sensor3),
+          sensor4: parseFloat(rawData[key]?.sensor4),
+          time: rawData[key]?.time ? format(new Date(rawData[key].time), 'dd/MM/yyyy à HH:mm:ss') : '',
+        }));
+        setData(formattedData);
+      }
     });
   }, [path]);
 
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: 'Experimentation',
+        accessor: 'experimentation',
+      },
+      {
+        Header: 'Scale',
+        accessor: 'scale',
+      },
+      {
+        Header: 'Sensor 1',
+        accessor: 'sensor1',
+      },
+      {
+        Header: 'Sensor 2',
+        accessor: 'sensor2',
+      },
+      {
+        Header: 'Sensor 3',
+        accessor: 'sensor3',
+      },
+      {
+        Header: 'Sensor 4',
+        accessor: 'sensor4',
+      },
+      {
+        Header: 'Time',
+        accessor: 'time',
+      },
+    ],
+    []
+  );
+
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    page,
+    nextPage,
+    previousPage,
+    canNextPage,
+    canPreviousPage,
+    prepareRow,
+    state: { pageIndex },
+  } = useTable(
+    {
+      columns,
+      data,
+      initialState: { pageIndex: 0 },
+    },
+    usePagination
+  );
+
   return (
     <div>
-      <h2>Données</h2>
-      <table>
+      <Table striped bordered hover {...getTableProps()}>
         <thead>
-          <tr>
-            {data.length > 0 && Object.keys(data[0]).map(key => (
-              <th key={key}>{key}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((row, index) => (
-            <tr key={index}>
-              {Object.values(row).map((value, idx) => (
-                <td key={idx}>{value}</td>
+          {headerGroups.map(headerGroup => (
+            <tr {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map(column => (
+                <th {...column.getHeaderProps()}>
+                  {column.render('Header')}
+                </th>
               ))}
             </tr>
           ))}
+        </thead>
+        <tbody {...getTableBodyProps()}>
+          {page.map(row => {
+            prepareRow(row);
+            return (
+              <tr {...row.getRowProps()}>
+                {row.cells.map(cell => (
+                  <td {...cell.getCellProps()}>
+                    {cell.render('Cell')}
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
         </tbody>
-      </table>
+      </Table>
+      <Pagination>
+        <Pagination.Prev onClick={() => previousPage()} disabled={!canPreviousPage} />
+        <Pagination.Item active>{pageIndex + 1}</Pagination.Item>
+        <Pagination.Next onClick={() => nextPage()} disabled={!canNextPage} />
+      </Pagination>
     </div>
   );
 };
+
+export default DisplayData;

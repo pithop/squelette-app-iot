@@ -1,10 +1,12 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState } from "react";
 import "./App.css";
 import { uploadCSVToFirebase } from './utils';
-import { DisplayData } from './DisplayData';
+import DisplayData from './DisplayData';
 
 export default function App() {
   const [file, setFile] = useState<File | null>(null);
+  const [path, setPath] = useState<string>('sable-limoneux/soil-humidity');
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -14,7 +16,13 @@ export default function App() {
 
   const handleUpload = () => {
     if (file) {
-      uploadCSVToFirebase(file, 'sable-limoneux/soil-humidity');
+      uploadCSVToFirebase(file, path)
+        .then(() => {
+          console.log("File uploaded successfully");
+        })
+        .catch((error) => {
+          console.error("Error uploading file:", error);
+        });
     }
   };
 
@@ -30,7 +38,7 @@ export default function App() {
           <input type="file" onChange={handleFileUpload} />
           <button onClick={handleUpload}>Uploader</button>
         </section>
-        <DisplayData path="sable-limoneux/soil-humidity" />
+        <DisplayData path={path} />
       </main>
       <footer>
         <p>&copy; 2024 Votre Compagnie. Tous droits réservés.</p>
