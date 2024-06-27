@@ -1,9 +1,5 @@
-const admin = require('firebase-admin');
 const nodemailer = require('nodemailer');
 
-admin.initializeApp();
-
-// Configuration de l'e-mail
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -27,10 +23,8 @@ module.exports = (req, res) => {
 
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      console.log(error);
       return res.status(500).send(error.toString());
     }
-    console.log('Email sent: ' + info.response);
     res.status(200).send('Email sent');
   });
 };
