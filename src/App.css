@@ -27,25 +27,50 @@ h1, h2 {
   color: #333;
 }
 
-ul {
-  list-style: none;
-  padding: 0;
-}
-
-ul li {
-  background: #fff;
+button {
   margin: 0.5rem 0;
-  padding: 1rem;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-footer {
-  background-color: #333;
-  color: white;
-  text-align: center;
-  padding: 1rem;
-  position: fixed;
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.modal-body > div {
+  margin-bottom: 1.5rem;
+}
+
+canvas {
+  max-width: 100%;
+  height: auto !important;
+}
+
+.bootstrap-table .table {
   width: 100%;
-  bottom: 0;
+  margin-bottom: 1rem;
+  color: #212529;
+}
+
+.bootstrap-table .table thead th {
+  vertical-align: bottom;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.bootstrap-table .table tbody + tbody {
+  border-top: 2px solid #dee2e6;
+}
+
+.bootstrap-table .table-hover tbody tr:hover {
+  color: #212529;
+  background-color: rgba(0, 0, 0, 0.075);
+}
+
+.bootstrap-table .table-condensed > thead > tr > th,
+.bootstrap-table .table-condensed > tbody > tr > th,
+.bootstrap-table .table-condensed > tfoot > tr > th,
+.bootstrap-table .table-condensed > thead > tr > td,
+.bootstrap-table .table-condensed > tbody > tr > td,
+.bootstrap-table .table-condensed > tfoot > tr > td {
+  padding: 5px;
 }
