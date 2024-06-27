@@ -6,7 +6,7 @@ import DisplayData from './DisplayData';
 
 export default function App() {
   const [file, setFile] = useState<File | null>(null);
-  const [path, setPath] = useState<string>('sable-limoneux/soil-humidity');
+  const [path, setPath] = useState<string>('hackathon');  // Changer ici pour 'hackathon'
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
