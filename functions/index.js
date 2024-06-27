@@ -7,7 +7,7 @@ admin.initializeApp();
 exports.sendEmailNotification = functions.database.ref('/hackathon/{pushId}')
   .onCreate((snapshot, context) => {
     const value = snapshot.val();
-    const url = 'https://squelette-app-qio8i6y1y-chahraoui-idriss-projects.vercel.app/api/send-email'; // Remplacez par l'URL de votre application Vercel
+    const url = 'https://squelette-app-1fm6hpf1d-chahraoui-idriss-projects.vercel.app/api/test'; // Remplacez par l'URL de votre application Vercel
 
     return fetch(url, {
       method: 'POST',
